@@ -1,0 +1,18 @@
+{
+  "name": "Mihrimatrix Awesome Components",
+  "short_name": "Awesome Components",
+  "description": "Gömülebilir React görsel bileşenler. Canlı önizle, props oku, kodu kopyala.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3f2ee",
+  "theme_color": "#141413",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

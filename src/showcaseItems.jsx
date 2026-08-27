@@ -1,0 +1,210 @@
+import {
+  Campfire,
+  ChillLion,
+  ColorRainLines,
+  DigitalClock3D,
+  Fireworks,
+  GravityParticles,
+  LinesBeLining,
+  ParticleAttraction,
+  RacingLines,
+  RainScreen,
+  RainbowGrid,
+  RainbowLinesOfStraightness,
+  RainbowShinyComets,
+  RainbowSimpleMotionParticles,
+  RainbowTransfer,
+  RandomWords,
+  SlideClock,
+  Starfield,
+} from "./components/index.js";
+
+export const showcaseItems = [
+  {
+    slug: "fireworks",
+    title: "Fireworks",
+    original: "Havai Fişek",
+    exportName: "Fireworks",
+    type: "Canvas",
+    description:
+      "Otomatik veya tıklamayla patlayan havai fişek. Parçacık sayısı, hız ve patlama boyutu props ile ayarlanır.",
+    hint: "Önizlemeye tıklayarak yeni bir patlama başlat.",
+    Component: Fireworks,
+  },
+  {
+    slug: "campfire",
+    title: "Campfire",
+    original: "Kamp Ateşi",
+    exportName: "Campfire",
+    type: "CSS",
+    description:
+      "Saf CSS ile çizilmiş kamp ateşi. Alev şiddeti, kıvılcımlar ve odun yığını açılıp kapatılabilir.",
+    Component: Campfire,
+  },
+  {
+    slug: "slide-clock",
+    title: "Slide Clock",
+    original: "Kapsamlı Döner Saat",
+    exportName: "SlideClock",
+    type: "DOM",
+    description:
+      "Rakamların kayarak değiştiği saat. 12/24 saat biçimi, saniye göstergesi ve harici bir zaman değeri alabilir.",
+    Component: SlideClock,
+  },
+  {
+    slug: "digital-clock-3d",
+    title: "3D Digital Clock",
+    original: "3D Dijital Saat",
+    exportName: "DigitalClock3D",
+    type: "DOM + Canvas",
+    description:
+      "Fareyle eğilebilen 3D dijital saat. Arka planda hareketli bir ağ katmanı vardır.",
+    hint: "Saatin üzerine gelerek perspektifi değiştir.",
+    Component: DigitalClock3D,
+  },
+  {
+    slug: "lines-be-lining",
+    title: "Lines Be Lining",
+    original: "LinesBeLining",
+    exportName: "LinesBeLining",
+    type: "Canvas",
+    description:
+      "Kenarlardan merkeze akan çizgi ağı. Arka plan veya geçiş yüzeyi olarak gömülür.",
+    Component: LinesBeLining,
+  },
+  {
+    slug: "particle-attraction",
+    title: "Particle Attraction",
+    original: "ParticleAttraction",
+    exportName: "ParticleAttraction",
+    type: "Canvas",
+    description:
+      "İmlece doğru çekilen renkli parçacık alanı. Vitrin ve hero arka planı için uygundur.",
+    hint: "İmleci gezdirerek çekim noktasını taşı.",
+    Component: ParticleAttraction,
+  },
+  {
+    slug: "racing-lines",
+    title: "Racing Lines",
+    original: "RacingLines",
+    exportName: "RacingLines",
+    type: "Three.js",
+    description:
+      "Three.js ile üretilmiş 3D tünel çizgileri. Satır ve sütun sayısı props ile değişir.",
+    hint: "Sürükleyerek bakış açısını kaydır; basılı tutunca hızlanır.",
+    Component: RacingLines,
+  },
+  {
+    slug: "rainbow-straightness",
+    title: "Rainbow Straightness",
+    original: "RainbowLinesOfStraightness",
+    exportName: "RainbowLinesOfStraightness",
+    type: "Canvas",
+    description:
+      "Gökkuşağı paletiyle ilerleyen düz çizgi hareketi. Sakin, dekoratif bir canvas sahnesi.",
+    Component: RainbowLinesOfStraightness,
+  },
+  {
+    slug: "shiny-comets",
+    title: "Shiny Comets",
+    original: "RainbowShinyComets",
+    exportName: "RainbowShinyComets",
+    type: "Canvas",
+    description:
+      "Parlak kuyruklu yıldız izleri. Hero veya yükleme ekranı arka planı olarak kullanılabilir.",
+    Component: RainbowShinyComets,
+  },
+  {
+    slug: "simple-motion",
+    title: "Simple Motion",
+    original: "RainbowSimpleMotionParticles",
+    exportName: "RainbowSimpleMotionParticles",
+    type: "Canvas",
+    description:
+      "Hafif gökkuşağı parçacık hareketi. Düşük maliyetli, sürekli akan bir arka plan.",
+    Component: RainbowSimpleMotionParticles,
+  },
+  {
+    slug: "rainbow-transfer",
+    title: "Rainbow Transfer",
+    original: "RainbowTransfer",
+    exportName: "RainbowTransfer",
+    type: "Canvas",
+    description:
+      "Renklerin birbirine aktığı gökkuşağı akışı. Tam genişlikte dekoratif bir bant olarak durur.",
+    Component: RainbowTransfer,
+  },
+  {
+    slug: "rainbow-grid",
+    title: "Rainbow Grid",
+    original: "SidenumChoserRainbowGrid",
+    exportName: "RainbowGrid",
+    type: "Canvas",
+    description:
+      "Hücreleri yanıp sönen gökkuşağı ızgarası. Ritimli, geometrik bir canvas deseni.",
+    Component: RainbowGrid,
+  },
+  {
+    slug: "random-words",
+    title: "Random Words",
+    original: "RandomWords",
+    exportName: "RandomWords",
+    type: "SVG",
+    description:
+      "Kelimelerin sırayla belirdiği SVG animasyonu. Kendi kelime listenizi ve süreyi verebilirsiniz.",
+    Component: RandomWords,
+  },
+  {
+    slug: "color-rain-lines",
+    title: "Color Rain Lines",
+    original: "Renkli Akan Çizgiler",
+    exportName: "ColorRainLines",
+    type: "Canvas",
+    description:
+      "Yukarıdan aşağıya akan renkli çizgiler. Yağmur benzeri, sürekli bir hareket katmanı.",
+    Component: ColorRainLines,
+  },
+  {
+    slug: "starfield",
+    title: "Starfield",
+    original: "Starfield",
+    exportName: "Starfield",
+    type: "Canvas",
+    description:
+      "Derinlik hissi veren yıldız alanı. Gece temalı arka planlar için hazır bir sahne.",
+    Component: Starfield,
+  },
+  {
+    slug: "rain-screen",
+    title: "Rain Screen",
+    original: "Yağmur Ekranı",
+    exportName: "RainScreen",
+    type: "Canvas",
+    description:
+      "Cam yüzeyindeki yağmur taneleri, izler ve isteğe bağlı şehir silüeti. Yoğunluk ve hız ayarlanır.",
+    hint: "İmleci hareket ettirerek yakındaki damlaları it.",
+    Component: RainScreen,
+  },
+  {
+    slug: "gravity-particles",
+    title: "Gravity Particles",
+    original: "Yerçekimli Parçacıklar",
+    exportName: "GravityParticles",
+    type: "Canvas",
+    description:
+      "Yerçekimine göre düşen ve yörünge çizen parçacıklar. İmleç çekim merkezini kaydırır.",
+    hint: "İmleci gezdirerek çekim noktasını değiştir.",
+    Component: GravityParticles,
+  },
+  {
+    slug: "chill-lion",
+    title: "Chill Lion",
+    original: "ChillTheLion",
+    exportName: "ChillLion",
+    type: "Three.js",
+    description:
+      "Three.js ile modellenmiş aslan ve vantilatör sahnesi. Fare aslanın bakışını ve rüzgârı yönetir.",
+    hint: "İmleci gezdir; basılı tutarak vantilatörü hızlandır.",
+    Component: ChillLion,
+  },
+];

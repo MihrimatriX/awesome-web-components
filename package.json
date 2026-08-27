@@ -1,0 +1,56 @@
+{
+  "name": "mihrimatrix-awesome-components",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "Responsive React component library extracted from the Awesome-WebSite experiments.",
+  "main": "./dist-lib/mihrimatrix-awesome.umd.cjs",
+  "module": "./dist-lib/mihrimatrix-awesome.es.js",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist-lib/mihrimatrix-awesome.es.js",
+      "require": "./dist-lib/mihrimatrix-awesome.umd.cjs"
+    }
+  },
+  "files": [
+    "dist-lib",
+    "types"
+  ],
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "npm run build:demo && npm run build:lib",
+    "build:demo": "vite build",
+    "build:lib": "vite build --config vite.lib.config.js",
+    "prepack": "npm run build:lib",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "three": ">=0.160"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.1.0",
+    "playwright-core": "^1.59.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.171.0",
+    "typescript": "^5.7.2",
+    "vite": "^8.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MihrimatriX/Awesome-WebSite.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MihrimatriX/Awesome-WebSite/issues"
+  },
+  "homepage": "https://github.com/MihrimatriX/Awesome-WebSite#readme"
+}
