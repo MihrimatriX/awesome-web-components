@@ -7,6 +7,8 @@ import {
   observeElementResize,
   pointerPosition,
   rand,
+  runLoop,
+  useLatest,
 } from "./CanvasHost.jsx";
 import { COMPONENT_ROOT_CLASS } from "./classNames.js";
 
@@ -62,15 +64,15 @@ export function RacingLines({
   style,
   rows = 14,
   cols = 16,
+  paused = false,
 }) {
   const hostRef = useRef(null);
+  const pausedRef = useLatest(paused);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return undefined;
 
-    let frameId = 0;
-    let disposed = false;
     let isPointerDown = false;
     const mouse = { x: 0, y: 0 };
     const camPos = { x: 0, y: 0, z: 520 };
@@ -82,7 +84,6 @@ export function RacingLines({
     const camera = new THREE.PerspectiveCamera(92, 1, 1, 9000);
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
-      preserveDrawingBuffer: true,
     });
     renderer.setClearColor(0x000000, 1);
     host.appendChild(renderer.domElement);
@@ -181,8 +182,6 @@ export function RacingLines({
     host.addEventListener("pointermove", onPointerMove);
 
     const render = () => {
-      if (disposed) return;
-      frameId = requestAnimationFrame(render);
       speed += ((isPointerDown ? speedFast : speedNormal) - speed) * 0.05;
       const currentSpeed = (speed - speedNormal) / (speedFast - speedNormal);
 
@@ -232,11 +231,10 @@ export function RacingLines({
       renderer.render(scene, camera);
     };
 
-    render();
+    const stopLoop = runLoop(host, render, () => pausedRef.current);
 
     return () => {
-      disposed = true;
-      cancelAnimationFrame(frameId);
+      stopLoop();
       stopObserving();
       host.removeEventListener("pointerdown", onPointerDown);
       host.removeEventListener("pointerup", onPointerUp);
@@ -245,6 +243,7 @@ export function RacingLines({
       disposeObject3D(scene);
       geometry.dispose();
       renderer.dispose();
+      renderer.forceContextLoss();
       renderer.domElement.remove();
     };
   }, [cols, rows]);
@@ -465,30 +464,36 @@ function createLionSceneObjects() {
   };
 }
 
-export function ChillLion({ height = 360, className, style }) {
+export function ChillLion({
+  height = 360,
+  className,
+  style,
+  paused = false,
+  showInstructions = true,
+}) {
   const hostRef = useRef(null);
+  const pausedRef = useLatest(paused);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return undefined;
 
-    let frameId = 0;
-    let disposed = false;
     let blowing = false;
     let windTime = 0;
-    const mouse = { x: -200, y: -200 };
+    // Fan rests to the right of the lion, facing it, until the pointer takes over.
+    const restPointer = { x: 130, y: 10 };
+    const mouse = { ...restPointer };
     let fanSpeed = 0;
     let fanAcc = 0;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, 1, 1, 2200);
-    camera.position.set(0, 0, 800);
+    camera.position.set(0, 0, 680);
     camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
-      preserveDrawingBuffer: true,
     });
     renderer.setClearColor(0x000000, 0);
     renderer.shadowMap.enabled = true;
@@ -558,15 +563,17 @@ export function ChillLion({ height = 360, className, style }) {
     const onPointerUp = () => {
       blowing = false;
     };
+    const onPointerLeave = () => {
+      blowing = false;
+      Object.assign(mouse, restPointer);
+    };
 
     host.addEventListener("pointermove", updatePointer);
     host.addEventListener("pointerdown", onPointerDown);
     host.addEventListener("pointerup", onPointerUp);
-    host.addEventListener("pointerleave", onPointerUp);
+    host.addEventListener("pointerleave", onPointerLeave);
 
     const render = () => {
-      if (disposed) return;
-      frameId = requestAnimationFrame(render);
 
       lion.fan.lookAt(new THREE.Vector3(0, 80, 60));
       lion.fan.position.x +=
@@ -705,18 +712,18 @@ export function ChillLion({ height = 360, className, style }) {
       renderer.render(scene, camera);
     };
 
-    render();
+    const stopLoop = runLoop(host, render, () => pausedRef.current);
 
     return () => {
-      disposed = true;
-      cancelAnimationFrame(frameId);
+      stopLoop();
       stopObserving();
       host.removeEventListener("pointermove", updatePointer);
       host.removeEventListener("pointerdown", onPointerDown);
       host.removeEventListener("pointerup", onPointerUp);
-      host.removeEventListener("pointerleave", onPointerUp);
+      host.removeEventListener("pointerleave", onPointerLeave);
       disposeObject3D(scene);
       renderer.dispose();
+      renderer.forceContextLoss();
       renderer.domElement.remove();
     };
   }, []);
@@ -732,12 +739,14 @@ export function ChillLion({ height = 360, className, style }) {
         role="img"
         aria-label="Interactive Three.js lion and fan"
       >
-        <div className="aw-chill-instructions" aria-hidden="true">
-          Press and drag to make wind
-          <span className="aw-chill-light">
-            the lion will surely appreciate
-          </span>
-        </div>
+        {showInstructions ? (
+          <div className="aw-chill-instructions" lang="en" aria-hidden="true">
+            Press and drag to make wind
+            <span className="aw-chill-light">
+              the lion will surely appreciate
+            </span>
+          </div>
+        ) : null}
       </div>
     </div>
   );

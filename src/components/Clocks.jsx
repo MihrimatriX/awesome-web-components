@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   CanvasHost,
   TAU,
@@ -10,6 +10,15 @@ import { COMPONENT_ROOT_CLASS } from "./classNames.js";
 
 function pad(value) {
   return value < 10 ? `0${value}` : `${value}`;
+}
+
+function clockParts(now, use24HourClock, showSeconds) {
+  const parts = [
+    use24HourClock ? now.getHours() : now.getHours() % 12 || 12,
+    now.getMinutes(),
+    now.getSeconds(),
+  ];
+  return (showSeconds ? parts : parts.slice(0, 2)).map(pad);
 }
 
 function dateFromValue(value) {
@@ -76,18 +85,13 @@ export function SlideClock({
   value,
 }) {
   const now = useClock(value);
-  const allParts = [
-    use24HourClock ? now.getHours() : now.getHours() % 12 || 12,
-    now.getMinutes(),
-    now.getSeconds(),
-  ];
-  const timeParts = showSeconds ? allParts : allParts.slice(0, 2);
-  const time = timeParts.map(pad).join("").split("").map(Number);
+  const timeParts = clockParts(now, use24HourClock, showSeconds);
+  const time = timeParts.join("").split("").map(Number);
   const digitRanges = (use24HourClock ? digitRanges24 : digitRanges12).slice(
     0,
     time.length,
   );
-  const readableTime = timeParts.map(pad).join(":");
+  const readableTime = timeParts.join(":");
 
   return (
     <div
@@ -96,6 +100,7 @@ export function SlideClock({
     >
       <div
         className="aw-slide-clock"
+        role="img"
         aria-label={`Sliding digital clock ${readableTime}`}
       >
         <div className="aw-slide-clock-inner">
@@ -163,8 +168,7 @@ function SevenSegmentDigit({ value }) {
 }
 
 function NetworkBackground() {
-  const start = useCallback(({ canvas, ctx, width, height }) => {
-    let frameId = 0;
+  const start = useCallback(({ loop, canvas, ctx, width, height }) => {
     const target = { x: width / 2, y: height / 2 };
     const points = [];
 
@@ -205,7 +209,6 @@ function NetworkBackground() {
     canvas.addEventListener("pointermove", onPointerMove);
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       ctx.clearRect(0, 0, width, height);
 
       points.forEach((point) => {
@@ -234,9 +237,9 @@ function NetworkBackground() {
       });
     };
 
-    anim();
+    const stop = loop(anim);
     return () => {
-      cancelAnimationFrame(frameId);
+      stop();
       canvas.removeEventListener("pointermove", onPointerMove);
     };
   }, []);
@@ -264,19 +267,8 @@ export function DigitalClock3D({
   const now = useClock(value);
   const rootRef = useRef(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const digits = useMemo(() => {
-    const parts = [
-      use24HourClock ? now.getHours() : now.getHours() % 12 || 12,
-      now.getMinutes(),
-      now.getSeconds(),
-    ];
-
-    return (showSeconds ? parts : parts.slice(0, 2))
-      .map(pad)
-      .join("")
-      .split("")
-      .map(Number);
-  }, [now, showSeconds, use24HourClock]);
+  const timeParts = clockParts(now, use24HourClock, showSeconds);
+  const digits = timeParts.join("").split("").map(Number);
 
   const onPointerMove = (event) => {
     if (!interactive) return;
@@ -302,12 +294,15 @@ export function DigitalClock3D({
         ref={rootRef}
         className="aw-digital-clock"
         onPointerMove={interactive ? onPointerMove : undefined}
-        aria-label="3D digital clock"
+        onPointerLeave={() => setTilt({ x: 0, y: 0 })}
+        role="img"
+        aria-label={`3D digital clock ${timeParts.join(":")}`}
       >
         {showNetwork ? <NetworkBackground /> : null}
         <div className="aw-digital-time">
           {digits.map((digit, index) => (
-            <span className="aw-digital-slot" key={`${index}-${digit}`}>
+            // Stable key: remounting on every digit change skipped the segment transitions.
+            <span className="aw-digital-slot" key={index}>
               <SevenSegmentDigit value={digit} />
               {index === 1 || (showSeconds && index === 3) ? (
                 <span className="aw-digital-colon" />

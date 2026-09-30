@@ -53,16 +53,51 @@ export function pointerPosition(event, element) {
   };
 }
 
+// Draws the first frame immediately, then skips frames while paused or scrolled
+// out of view. Hidden tabs are already throttled by requestAnimationFrame.
+export function runLoop(element, frame, isPaused = () => false) {
+  let frameId = 0;
+  let visible = true;
+  const observer =
+    typeof IntersectionObserver === "undefined"
+      ? null
+      : new IntersectionObserver(([entry]) => {
+          visible = entry.isIntersecting;
+        });
+  observer?.observe(element);
+
+  const tick = () => {
+    frameId = requestAnimationFrame(tick);
+    if (visible && !isPaused()) frame();
+  };
+
+  frame();
+  frameId = requestAnimationFrame(tick);
+
+  return () => {
+    cancelAnimationFrame(frameId);
+    observer?.disconnect();
+  };
+}
+
+export function useLatest(value) {
+  const ref = useRef(value);
+  ref.current = value;
+  return ref;
+}
+
 export function CanvasHost({
   start,
   className,
   surfaceClassName,
   style,
   height = 360,
+  paused = false,
   ariaLabel = "Animated visual component",
 }) {
   const hostRef = useRef(null);
   const canvasRef = useRef(null);
+  const pausedRef = useLatest(paused);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -108,6 +143,7 @@ export function CanvasHost({
         height: nextHeight,
         dpr,
         host,
+        loop: (frame) => runLoop(host, frame, () => pausedRef.current),
       });
 
       disposeEffect = typeof cleanup === "function" ? cleanup : null;

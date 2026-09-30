@@ -67,7 +67,13 @@ export function RandomWords({
         "--mxac-word-play-state": paused ? "paused" : "running",
       })}
     >
-      <div className="aw-random-words" onAnimationIteration={advanceWord}>
+      <div
+        className="aw-random-words"
+        // Words are uppercased in CSS; the built-in list is English, so keep a
+        // Turkish page from turning "midnight" into "MİDNİGHT".
+        lang={words === WORDS ? "en" : undefined}
+        onAnimationIteration={advanceWord}
+      >
         <svg role="img" aria-label={`${word}${suffix}`}>
           <title>
             {word}

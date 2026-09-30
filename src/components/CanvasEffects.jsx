@@ -19,8 +19,7 @@ export function Fireworks({
   paused = false,
 }) {
   const start = useCallback(
-    ({ canvas, ctx, width: w, height: h }) => {
-      let frameId = 0;
+    ({ loop, canvas, ctx, width: w, height: h }) => {
       let tick = 0;
       let cx = w / 2;
       let cy = h / 2;
@@ -119,8 +118,6 @@ export function Fireworks({
       ctx.fillRect(0, 0, w, h);
 
       const anim = () => {
-        frameId = requestAnimationFrame(anim);
-        if (paused) return;
         tick += speedValue;
 
         ctx.globalCompositeOperation = "source-over";
@@ -142,19 +139,22 @@ export function Fireworks({
         ctx.restore();
       };
 
-      anim();
+      // Warm up so the first visible frame is already a burst, not an empty canvas.
+      for (let i = 0; i < 45; i += 1) anim();
+      const stop = loop(anim);
 
       return () => {
-        cancelAnimationFrame(frameId);
+        stop();
         canvas.removeEventListener("pointerdown", onPointerDown);
       };
     },
-    [autoLaunch, burstSize, interactive, particleLimit, paused, speed],
+    [autoLaunch, burstSize, interactive, particleLimit, speed],
   );
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -163,9 +163,13 @@ export function Fireworks({
   );
 }
 
-export function LinesBeLining({ height = 320, className, style }) {
-  const start = useCallback(({ ctx, width: w, height: h }) => {
-    let frameId = 0;
+export function LinesBeLining({
+  height = 320,
+  className,
+  style,
+  paused = false,
+}) {
+  const start = useCallback(({ loop, ctx, width: w, height: h }) => {
     let frame = 0;
     const rects = [];
     const prob = Math.max(0.0002 * (h + w), 0.28);
@@ -213,19 +217,19 @@ export function LinesBeLining({ height = 320, className, style }) {
     for (let i = 0; i < 850; i += 1) update(true);
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       ctx.fillStyle = "#222";
       ctx.fillRect(0, 0, w, h);
       update();
     };
 
-    anim();
-    return () => cancelAnimationFrame(frameId);
+    const stop = loop(anim);
+    return stop;
   }, []);
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -234,9 +238,13 @@ export function LinesBeLining({ height = 320, className, style }) {
   );
 }
 
-export function ParticleAttraction({ height = 320, className, style }) {
-  const start = useCallback(({ canvas, ctx, width: w, height: h }) => {
-    let frameId = 0;
+export function ParticleAttraction({
+  height = 320,
+  className,
+  style,
+  paused = false,
+}) {
+  const start = useCallback(({ loop, canvas, ctx, width: w, height: h }) => {
     let cx = w / 2;
     let cy = h / 2;
     let tick = 0;
@@ -276,14 +284,18 @@ export function ParticleAttraction({ height = 320, className, style }) {
       cx = pos.x;
       cy = pos.y;
     };
+    const onPointerLeave = () => {
+      cx = w / 2;
+      cy = h / 2;
+    };
 
     canvas.addEventListener("pointermove", onPointer);
     canvas.addEventListener("pointerdown", onPointer);
+    canvas.addEventListener("pointerleave", onPointerLeave);
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, w, h);
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       tick += 1;
 
       if (particles.length < 220) particles.push(new Particle());
@@ -293,17 +305,19 @@ export function ParticleAttraction({ height = 320, className, style }) {
       particles.forEach((particle) => particle.step());
     };
 
-    anim();
+    const stop = loop(anim);
     return () => {
-      cancelAnimationFrame(frameId);
+      stop();
       canvas.removeEventListener("pointermove", onPointer);
       canvas.removeEventListener("pointerdown", onPointer);
+      canvas.removeEventListener("pointerleave", onPointerLeave);
     };
   }, []);
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -316,9 +330,9 @@ export function RainbowSimpleMotionParticles({
   height = 320,
   className,
   style,
+  paused = false,
 }) {
-  const start = useCallback(({ ctx, width: w, height: h }) => {
-    let frameId = 0;
+  const start = useCallback(({ loop, ctx, width: w, height: h }) => {
     let tick = 0;
     const count = 120;
 
@@ -329,7 +343,6 @@ export function RainbowSimpleMotionParticles({
     ctx.fillRect(0, 0, w, h);
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       tick += 0.02;
 
       ctx.fillStyle = "rgba(0,0,0,.1)";
@@ -350,13 +363,14 @@ export function RainbowSimpleMotionParticles({
       }
     };
 
-    anim();
-    return () => cancelAnimationFrame(frameId);
+    const stop = loop(anim);
+    return stop;
   }, []);
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -365,9 +379,13 @@ export function RainbowSimpleMotionParticles({
   );
 }
 
-export function RainbowTransfer({ height = 360, className, style }) {
-  const start = useCallback(({ ctx, width: w, height: h }) => {
-    let frameId = 0;
+export function RainbowTransfer({
+  height = 360,
+  className,
+  style,
+  paused = false,
+}) {
+  const start = useCallback(({ loop, ctx, width: w, height: h }) => {
     const s = Math.min(w, h) * 0.92;
     const ox = (w - s) / 2;
     const oy = (h - s) / 2;
@@ -494,19 +512,19 @@ export function RainbowTransfer({ height = 360, className, style }) {
     };
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       drawFrame();
     };
 
     paintShell();
     for (let i = 0; i < 120; i += 1) drawFrame();
-    anim();
-    return () => cancelAnimationFrame(frameId);
+    const stop = loop(anim);
+    return stop;
   }, []);
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       surfaceClassName="aw-rainbow-transfer"
@@ -516,9 +534,13 @@ export function RainbowTransfer({ height = 360, className, style }) {
   );
 }
 
-export function RainbowLinesOfStraightness({ height = 340, className, style }) {
-  const start = useCallback(({ ctx, width: w, height: h }) => {
-    let frameId = 0;
+export function RainbowLinesOfStraightness({
+  height = 340,
+  className,
+  style,
+  paused = false,
+}) {
+  const start = useCallback(({ loop, ctx, width: w, height: h }) => {
     let frame = 0;
     let timeSinceLast = 0;
     const minDist = 10;
@@ -638,18 +660,18 @@ export function RainbowLinesOfStraightness({ height = 340, className, style }) {
     };
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       drawFrame();
     };
 
     for (let i = 0; i < 42; i += 1) drawFrame();
-    anim();
-    return () => cancelAnimationFrame(frameId);
+    const stop = loop(anim);
+    return stop;
   }, []);
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -658,9 +680,13 @@ export function RainbowLinesOfStraightness({ height = 340, className, style }) {
   );
 }
 
-export function RainbowGrid({ height = 340, className, style }) {
-  const start = useCallback(({ ctx, width: w, height: h }) => {
-    let frameId = 0;
+export function RainbowGrid({
+  height = 340,
+  className,
+  style,
+  paused = false,
+}) {
+  const start = useCallback(({ loop, ctx, width: w, height: h }) => {
     const opts = {
       lineMaxCount: 44,
       lineSpawnProb: 0.12,
@@ -816,20 +842,20 @@ export function RainbowGrid({ height = 340, className, style }) {
     };
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       drawFrame();
     };
 
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, w, h);
     for (let i = 0; i < 78; i += 1) drawFrame();
-    anim();
-    return () => cancelAnimationFrame(frameId);
+    const stop = loop(anim);
+    return stop;
   }, []);
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -838,9 +864,13 @@ export function RainbowGrid({ height = 340, className, style }) {
   );
 }
 
-export function GravityParticles({ height = 340, className, style }) {
-  const start = useCallback(({ canvas, ctx, width: w, height: h }) => {
-    let frameId = 0;
+export function GravityParticles({
+  height = 340,
+  className,
+  style,
+  paused = false,
+}) {
+  const start = useCallback(({ loop, canvas, ctx, width: w, height: h }) => {
     let tick = 0;
     const particles = [];
     const orbits = [];
@@ -850,10 +880,10 @@ export function GravityParticles({ height = 340, className, style }) {
       particleInitialVel: 2,
       particleInertia: 1000,
       particleFriction: 0.99,
-      particleTemplateColor: "hsla(hue,60%,45%,.1)",
+      particleTemplateColor: "hsla(hue,70%,55%,.3)",
       particleSize: 4,
       orbits: 7,
-      orbitTemplateColor: "hsla(hue,80%,55%,.1)",
+      orbitTemplateColor: "hsla(hue,80%,60%,.22)",
       orbitBaseVel: 1,
       orbitAddedVel: 0.5,
       orbitVelWaveIncrementer: 0.01,
@@ -960,7 +990,8 @@ export function GravityParticles({ height = 340, className, style }) {
         this.x += this.vx;
         this.y += this.vy;
 
-        const hue = ((this.x / w) * 360 + tick) | 0;
+        // Bounded key: an ever-growing tick would create a new cached canvas every frame.
+        const hue = (((this.x / w) * 360 + tick) | 0) % 360;
         let cache = particleCaches[hue];
 
         if (!cache) {
@@ -999,20 +1030,22 @@ export function GravityParticles({ height = 340, className, style }) {
     canvas.addEventListener("pointerleave", onPointerLeave);
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       tick += 1;
 
       if (particles.length < opts.particles) particles.push(new Particle());
 
+      ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = `rgba(0,0,0,${opts.repaintAlpha})`;
       ctx.fillRect(0, 0, w, h);
+      // Additive blending lets overlapping faint particles build up into glow.
+      ctx.globalCompositeOperation = "lighter";
       orbits.forEach((orbit) => orbit.step());
       particles.forEach((particle) => particle.step());
     };
 
-    anim();
+    const stop = loop(anim);
     return () => {
-      cancelAnimationFrame(frameId);
+      stop();
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerleave", onPointerLeave);
     };
@@ -1021,6 +1054,7 @@ export function GravityParticles({ height = 340, className, style }) {
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -1029,9 +1063,13 @@ export function GravityParticles({ height = 340, className, style }) {
   );
 }
 
-export function RainbowShinyComets({ height = 340, className, style }) {
-  const start = useCallback(({ ctx, width: w, height: h }) => {
-    let frameId = 0;
+export function RainbowShinyComets({
+  height = 340,
+  className,
+  style,
+  paused = false,
+}) {
+  const start = useCallback(({ loop, ctx, width: w, height: h }) => {
     let tick = 0;
     let explosions = 0;
     const meteors = [];
@@ -1100,7 +1138,6 @@ export function RainbowShinyComets({ height = 340, className, style }) {
       }
 
       render() {
-        ctx.shadowBlur = 0;
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, opts.hitLine, this.life, 0, TAU);
@@ -1145,14 +1182,29 @@ export function RainbowShinyComets({ height = 340, className, style }) {
       }
 
       render() {
-        const color = `hsl(${(this.x / w) * 100 + tick}, 80%, light%)`;
-        ctx.fillStyle = color.replace("light", Math.random() * 30 + 25);
-        ctx.shadowColor = color.replace("light", Math.random() * 25 + 25);
-        ctx.shadowBlur = this.size;
+        const hue = (this.x / w) * 100 + tick;
+        const glowColor = `hsla(${hue}, 80%, ${Math.random() * 25 + 25}%,`;
+        const r = this.size / 2;
+        // A radial gradient looks like shadowBlur but costs a fraction of it.
+        const glow = ctx.createRadialGradient(
+          this.x,
+          this.y,
+          r * 0.5,
+          this.x,
+          this.y,
+          r + this.size,
+        );
+        glow.addColorStop(0, `${glowColor} .9)`);
+        glow.addColorStop(1, `${glowColor} 0)`);
+        ctx.fillStyle = glow;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size / 2, 0, TAU);
+        ctx.arc(this.x, this.y, r + this.size, 0, TAU);
         ctx.fill();
-        ctx.fillStyle = ctx.shadowColor;
+        ctx.fillStyle = `hsl(${hue}, 80%, ${Math.random() * 30 + 25}%)`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, r, 0, TAU);
+        ctx.fill();
+        ctx.fillStyle = `${glowColor} 1)`;
         this.ashes.forEach((ash) => ash.render());
       }
     }
@@ -1168,7 +1220,6 @@ export function RainbowShinyComets({ height = 340, className, style }) {
     ctx.fillRect(0, 0, w, h);
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       tick = (tick + 0.6) % 360;
       explosions = Math.max(0, explosions - 1 / opts.hitCoolDown);
 
@@ -1205,13 +1256,14 @@ export function RainbowShinyComets({ height = 340, className, style }) {
       ctx.restore();
     };
 
-    anim();
-    return () => cancelAnimationFrame(frameId);
+    const stop = loop(anim);
+    return stop;
   }, []);
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -1220,9 +1272,13 @@ export function RainbowShinyComets({ height = 340, className, style }) {
   );
 }
 
-export function Starfield({ height = 340, className, style }) {
-  const start = useCallback(({ ctx, width: w, height: h }) => {
-    let frameId = 0;
+export function Starfield({
+  height = 340,
+  className,
+  style,
+  paused = false,
+}) {
+  const start = useCallback(({ loop, ctx, width: w, height: h }) => {
     let frameCount = 0;
     const stars = [];
     const count = Math.min(1000, Math.max(180, Math.floor(w)));
@@ -1251,7 +1307,6 @@ export function Starfield({ height = 340, className, style }) {
     };
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       frameCount += 1;
       ctx.fillStyle = "#181818";
       ctx.fillRect(0, 0, w, h);
@@ -1266,13 +1321,14 @@ export function Starfield({ height = 340, className, style }) {
       });
     };
 
-    anim();
-    return () => cancelAnimationFrame(frameId);
+    const stop = loop(anim);
+    return stop;
   }, []);
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -1281,9 +1337,13 @@ export function Starfield({ height = 340, className, style }) {
   );
 }
 
-export function ColorRainLines({ height = 340, className, style }) {
-  const start = useCallback(({ ctx, width: w, height: h }) => {
-    let frameId = 0;
+export function ColorRainLines({
+  height = 340,
+  className,
+  style,
+  paused = false,
+}) {
+  const start = useCallback(({ loop, ctx, width: w, height: h }) => {
     let tick = Math.random() * 360;
     const lines = [];
     const count = Math.min(900, Math.max(150, Math.floor(w * 1.05)));
@@ -1299,12 +1359,32 @@ export function ColorRainLines({ height = 340, className, style }) {
       return line;
     };
 
+    // A gradient per line per frame is the bottleneck, so each 5° hue band is
+    // rendered once as a 1px strip and stretched to the line's width.
+    const sprites = [];
+    const lineSprite = (hue) => {
+      const band = Math.round(hue / 5) % 72;
+      if (sprites[band]) return sprites[band];
+
+      const sprite = document.createElement("canvas");
+      sprite.width = 1;
+      sprite.height = Math.ceil(lineHeight);
+      const spriteCtx = sprite.getContext("2d");
+      const gradient = spriteCtx.createLinearGradient(0, 0, 0, sprite.height);
+      gradient.addColorStop(0, `hsla(${band * 5}, 100%, 70%, 0)`);
+      gradient.addColorStop(0.08, `hsla(${band * 5}, 100%, 62%, 1)`);
+      gradient.addColorStop(1, `hsla(${band * 5 + 70}, 100%, 50%, 0)`);
+      spriteCtx.fillStyle = gradient;
+      spriteCtx.fillRect(0, 0, 1, sprite.height);
+      sprites[band] = sprite;
+      return sprite;
+    };
+
     for (let i = 0; i < count; i += 1) lines.push(resetLine());
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, w, h);
 
     const anim = () => {
-      frameId = requestAnimationFrame(anim);
       tick += 0.8;
 
       ctx.globalCompositeOperation = "source-over";
@@ -1316,22 +1396,15 @@ export function ColorRainLines({ height = 340, className, style }) {
         if (line.y > h + 20) resetLine(line);
 
         const hue = (line.x / w) * 360 + tick;
-        const gradient = ctx.createLinearGradient(
-          line.x,
+        ctx.globalAlpha = line.alpha;
+        ctx.drawImage(
+          lineSprite(hue),
+          line.x - line.width / 2,
           line.y,
-          line.x,
-          line.y + lineHeight,
+          line.width,
+          lineHeight,
         );
-        gradient.addColorStop(0, `hsla(${hue}, 100%, 70%, 0)`);
-        gradient.addColorStop(0.08, `hsla(${hue}, 100%, 62%, ${line.alpha})`);
-        gradient.addColorStop(1, `hsla(${hue + 70}, 100%, 50%, 0)`);
-
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = line.width;
-        ctx.beginPath();
-        ctx.moveTo(line.x, line.y);
-        ctx.lineTo(line.x, line.y + lineHeight);
-        ctx.stroke();
+        ctx.globalAlpha = 1;
 
         if (line.tip) {
           ctx.fillStyle = `hsla(${hue}, 100%, 80%, .7)`;
@@ -1359,13 +1432,14 @@ export function ColorRainLines({ height = 340, className, style }) {
       ctx.globalCompositeOperation = "source-over";
     };
 
-    anim();
-    return () => cancelAnimationFrame(frameId);
+    const stop = loop(anim);
+    return stop;
   }, []);
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       style={style}
@@ -1385,9 +1459,9 @@ export function RainScreen({
   paused = false,
 }) {
   const start = useCallback(
-    ({ canvas, ctx, width: w, height: h }) => {
-      let frameId = 0;
+    ({ loop, canvas, ctx, width: w, height: h }) => {
       let tick = 0;
+      let frameCount = 0;
       const densityValue = Number.isFinite(Number(density))
         ? clamp(Number(density), 0.2, 2.4)
         : 1;
@@ -1449,6 +1523,35 @@ export function RainScreen({
         },
       );
 
+      // Blur each light once up front; a canvas blur filter every frame was the
+      // single most expensive call in this effect.
+      bokeh.forEach((light) => {
+        const pad = 26;
+        const size = Math.ceil((light.r + pad) * 2);
+        const center = size / 2;
+        light.sprite = document.createElement("canvas");
+        light.sprite.width = light.sprite.height = size;
+        const spriteCtx = light.sprite.getContext("2d");
+        const spot = spriteCtx.createRadialGradient(
+          center,
+          center,
+          0,
+          center,
+          center,
+          light.r,
+        );
+        spot.addColorStop(0, `hsla(${light.hue}, 72%, 72%, ${light.alpha})`);
+        spot.addColorStop(
+          0.34,
+          `hsla(${light.hue}, 68%, 56%, ${light.alpha * 0.32})`,
+        );
+        spot.addColorStop(1, "rgba(255,255,255,0)");
+        spriteCtx.filter = "blur(13px)";
+        spriteCtx.fillStyle = spot;
+        spriteCtx.arc(center, center, light.r, 0, TAU);
+        spriteCtx.fill();
+      });
+
       if (showCity) {
         for (let x = -Math.random() * 32; x < w + 80; x += rand(24, 64)) {
           silhouettes.push({
@@ -1506,6 +1609,20 @@ export function RainScreen({
         return drop;
       };
 
+      // One pre-rendered bead (alpha 1, radius 16) scaled per bead is far cheaper
+      // than a fresh radial gradient for each of the ~900 beads every frame.
+      const beadSprite = document.createElement("canvas");
+      beadSprite.width = beadSprite.height = 32;
+      const spriteCtx = beadSprite.getContext("2d");
+      const spriteGlow = spriteCtx.createRadialGradient(11.5, 10.9, 0, 16, 16, 57.6);
+      spriteGlow.addColorStop(0, "rgba(255,255,255,1)");
+      spriteGlow.addColorStop(0.34, "rgba(205,225,232,.24)");
+      spriteGlow.addColorStop(0.58, "rgba(5,12,18,.18)");
+      spriteGlow.addColorStop(1, "rgba(255,255,255,0)");
+      spriteCtx.fillStyle = spriteGlow;
+      spriteCtx.arc(16, 16, 16, 0, TAU);
+      spriteCtx.fill();
+
       for (let i = 0; i < beadCount; i += 1) beads.push(resetBead());
       for (let i = 0; i < runnerCount; i += 1) runners.push(resetRunner());
       for (let i = 0; i < streakCount; i += 1) streaks.push(resetStreak());
@@ -1519,26 +1636,13 @@ export function RainScreen({
         base.addColorStop(1, "#05090f");
         backdropCtx.fillStyle = base;
         backdropCtx.fillRect(0, 0, w, h);
-
-        backdropCtx.save();
-        backdropCtx.filter = "blur(13px)";
         bokeh.forEach((light) => {
           const x = light.x + Math.sin(time + light.phase) * light.drift * 28;
           const y =
             light.y + Math.cos(time * 0.7 + light.phase) * light.drift * 16;
-          const spot = backdropCtx.createRadialGradient(x, y, 0, x, y, light.r);
-          spot.addColorStop(0, `hsla(${light.hue}, 72%, 72%, ${light.alpha})`);
-          spot.addColorStop(
-            0.34,
-            `hsla(${light.hue}, 68%, 56%, ${light.alpha * 0.32})`,
-          );
-          spot.addColorStop(1, "rgba(255,255,255,0)");
-          backdropCtx.fillStyle = spot;
-          backdropCtx.beginPath();
-          backdropCtx.arc(x, y, light.r, 0, TAU);
-          backdropCtx.fill();
+          const half = light.sprite.width / 2;
+          backdropCtx.drawImage(light.sprite, x - half, y - half);
         });
-        backdropCtx.restore();
 
         if (showCity) {
           silhouettes.forEach((shape) => {
@@ -1655,13 +1759,14 @@ export function RainScreen({
         const rx = drop.rx;
         const ry = drop.ry;
 
+        // Soft contact shadow: two offset fills instead of shadowBlur, which
+        // halved the frame rate with ~80 drops on screen.
         ctx.save();
+        ctx.fillStyle = `rgba(0, 0, 0, ${0.08 * drop.alpha})`;
+        ctx.translate(rx * 0.22, ry * 0.15);
+        drawDropPath(ctx, drop, 1.22);
+        ctx.fill();
         drawDropPath(ctx, drop, 1.08);
-        ctx.shadowColor = `rgba(0, 0, 0, ${0.22 * drop.alpha})`;
-        ctx.shadowBlur = Math.max(4, rx * 0.9);
-        ctx.shadowOffsetX = rx * 0.22;
-        ctx.shadowOffsetY = ry * 0.15;
-        ctx.fillStyle = `rgba(0, 0, 0, ${0.1 * drop.alpha})`;
         ctx.fill();
         ctx.restore();
 
@@ -1750,12 +1855,13 @@ export function RainScreen({
       }
 
       const anim = () => {
-        frameId = requestAnimationFrame(anim);
-        if (paused && tick > 0) return;
         tick += speedValue;
 
         ctx.globalCompositeOperation = "source-over";
-        paintBackdrop();
+        // The blurred backdrop drifts well under a pixel per frame, so repainting
+        // it every few frames is invisible and skips the costliest draw call.
+        frameCount += 1;
+        if (frameCount % 6 === 1) paintBackdrop();
         ctx.drawImage(backdrop, 0, 0);
 
         ctx.fillStyle = "rgba(216, 232, 238, 0.055)";
@@ -1799,23 +1905,16 @@ export function RainScreen({
 
           if (bead.life <= 0 || bead.y > h + 8) resetBead(bead, false);
 
-          const beadGlow = ctx.createRadialGradient(
-            bead.x - bead.r * 0.28,
-            bead.y - bead.r * 0.32,
-            0,
-            bead.x,
-            bead.y,
-            bead.r * 3.6,
+          ctx.globalAlpha = bead.alpha;
+          ctx.drawImage(
+            beadSprite,
+            bead.x - bead.r,
+            bead.y - bead.r * bead.squash,
+            bead.r * 2,
+            bead.r * 2 * bead.squash,
           );
-          beadGlow.addColorStop(0, `rgba(255,255,255,${bead.alpha})`);
-          beadGlow.addColorStop(0.34, `rgba(205,225,232,${bead.alpha * 0.24})`);
-          beadGlow.addColorStop(0.58, `rgba(5,12,18,${bead.alpha * 0.18})`);
-          beadGlow.addColorStop(1, "rgba(255,255,255,0)");
-          ctx.fillStyle = beadGlow;
-          ctx.beginPath();
-          ctx.ellipse(bead.x, bead.y, bead.r, bead.r * bead.squash, 0, 0, TAU);
-          ctx.fill();
         });
+        ctx.globalAlpha = 1;
 
         runners.forEach((drop) => {
           drop.phase += 0.012 * speedValue;
@@ -1901,19 +2000,20 @@ export function RainScreen({
         ctx.globalCompositeOperation = "source-over";
       };
 
-      anim();
+      const stop = loop(anim);
       return () => {
-        cancelAnimationFrame(frameId);
+        stop();
         canvas.removeEventListener("pointerdown", onPointer);
         canvas.removeEventListener("pointermove", onPointer);
       };
     },
-    [density, interactive, paused, showCity, speed],
+    [density, interactive, showCity, speed],
   );
 
   return (
     <CanvasHost
       start={start}
+      paused={paused}
       height={height}
       className={className}
       surfaceClassName="aw-rain-screen"

@@ -70,10 +70,17 @@ vardir:
 - `RandomWords`: `words`, `duration`, `suffix`, `paused`
 - `SlideClock`: `value`, `use24HourClock`, `showSeconds`
 - `DigitalClock3D`: `value`, `use24HourClock`, `showSeconds`, `interactive`, `showNetwork`
-- `RacingLines`: `rows`, `cols`
+- `RacingLines`: `rows`, `cols`, `paused`
+- `ChillLion`: `showInstructions`, `paused`
+- Diger tum canvas ve Three.js componentleri: `paused`
 
-Showcase uygulamasi artik bir component lab olarak calisir: komponent secilir,
-canli preview gorulur, import ornegi ve prop listesi ayni ekranda incelenir.
+Canvas ve Three.js animasyonlari ekran disina kaydiginda kendiliginden durur,
+geri gorundugunde devam eder; ayni sayfaya birden fazla efekt gommek bu yuzden
+gorunmeyenler icin CPU/GPU harcamaz.
+
+Showcase uygulamasi bir component lab olarak calisir: komponent secilir,
+canli preview gorulur, prop'lar kontrollerle anlik degistirilir ve kopyalanan
+kullanim kodu o anki ayarlari yansitir.
 
 ## Componentler
 

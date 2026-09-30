@@ -57,7 +57,7 @@ export const componentStyles = `
   overflow: hidden;
   background: #111;
   isolation: isolate;
-  touch-action: none;
+  touch-action: manipulation;
   user-select: none;
 }
 
@@ -75,11 +75,13 @@ export const componentStyles = `
 .mxac-root .aw-racing-lines {
   background: #000;
   cursor: crosshair;
+  touch-action: none;
 }
 
 .mxac-root .aw-chill-lion {
   background: #ebe5e7;
   cursor: grab;
+  touch-action: none;
 }
 
 .mxac-root .aw-chill-instructions {

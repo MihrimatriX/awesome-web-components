@@ -32,6 +32,8 @@ function seoFilesPlugin(siteUrl) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const siteUrl = env.VITE_SITE_URL || "http://localhost:4173";
+  // index.html reads %VITE_SITE_URL%; without a default the literal leaks into the build.
+  process.env.VITE_SITE_URL = siteUrl;
 
   return {
     plugins: [react(), seoFilesPlugin(siteUrl)],

@@ -148,7 +148,7 @@ code {
 .ghost-link:hover,
 .ghost-link:focus-visible {
   color: var(--ink);
-  outline: 0;
+  outline: 2px solid var(--focus);
 }
 
 .copy-btn,
@@ -172,7 +172,7 @@ code {
 .text-btn:hover,
 .text-btn:focus-visible {
   color: var(--ink);
-  outline: 0;
+  outline: 2px solid var(--focus);
 }
 
 .library-main {
@@ -283,7 +283,7 @@ code {
 
 .type-filter button:hover,
 .type-filter button:focus-visible {
-  outline: 0;
+  outline: 2px solid var(--focus);
   color: var(--ink);
 }
 
@@ -314,7 +314,7 @@ code {
 
 .catalog-item:hover,
 .catalog-item:focus-visible {
-  outline: 0;
+  outline: 2px solid var(--focus);
   background: var(--surface);
   border-color: var(--line);
 }
@@ -620,4 +620,59 @@ code {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.prop-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 0.8rem;
+}
+
+.prop-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prop-control input[type="text"] {
+  width: 7rem;
+  padding: 3px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.prop-control input[type="checkbox"],
+.prop-control input[type="range"] {
+  accent-color: var(--accent);
+}
+
+.prop-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prop-range input {
+  width: 110px;
+}
+
+.prop-range output {
+  min-width: 3ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.prop-controls .text-btn {
+  margin-left: auto;
+}
+
+.prop-controls .text-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
 }

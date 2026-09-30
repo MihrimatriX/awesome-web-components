@@ -9,6 +9,11 @@ export interface AwesomeBaseProps {
   style?: CSSProperties;
 }
 
+export interface AwesomePausableProps extends AwesomeBaseProps {
+  /** Freezes the animation. Effects also pause on their own while off-screen. */
+  paused?: boolean;
+}
+
 export interface FireworksProps extends AwesomeBaseProps {
   particles?: number;
   autoLaunch?: boolean;
@@ -31,7 +36,7 @@ export interface RandomWordsProps extends AwesomeBaseProps {
   paused?: boolean;
 }
 
-export interface RacingLinesProps extends AwesomeBaseProps {
+export interface RacingLinesProps extends AwesomePausableProps {
   rows?: number;
   cols?: number;
 }
@@ -51,16 +56,16 @@ export interface DigitalClock3DProps extends AwesomeBaseProps {
   showNetwork?: boolean;
 }
 
-export type LinesBeLiningProps = AwesomeBaseProps;
-export type ParticleAttractionProps = AwesomeBaseProps;
-export type RainbowSimpleMotionParticlesProps = AwesomeBaseProps;
-export type RainbowTransferProps = AwesomeBaseProps;
-export type RainbowLinesOfStraightnessProps = AwesomeBaseProps;
-export type RainbowGridProps = AwesomeBaseProps;
-export type GravityParticlesProps = AwesomeBaseProps;
-export type RainbowShinyCometsProps = AwesomeBaseProps;
-export type StarfieldProps = AwesomeBaseProps;
-export type ColorRainLinesProps = AwesomeBaseProps;
+export type LinesBeLiningProps = AwesomePausableProps;
+export type ParticleAttractionProps = AwesomePausableProps;
+export type RainbowSimpleMotionParticlesProps = AwesomePausableProps;
+export type RainbowTransferProps = AwesomePausableProps;
+export type RainbowLinesOfStraightnessProps = AwesomePausableProps;
+export type RainbowGridProps = AwesomePausableProps;
+export type GravityParticlesProps = AwesomePausableProps;
+export type RainbowShinyCometsProps = AwesomePausableProps;
+export type StarfieldProps = AwesomePausableProps;
+export type ColorRainLinesProps = AwesomePausableProps;
 export interface RainScreenProps extends AwesomeBaseProps {
   density?: number;
   speed?: number;
@@ -69,7 +74,9 @@ export interface RainScreenProps extends AwesomeBaseProps {
   paused?: boolean;
 }
 
-export type ChillLionProps = AwesomeBaseProps;
+export interface ChillLionProps extends AwesomePausableProps {
+  showInstructions?: boolean;
+}
 
 export const ColorRainLines: ComponentType<ColorRainLinesProps>;
 export const Fireworks: ComponentType<FireworksProps>;

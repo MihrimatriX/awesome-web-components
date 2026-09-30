@@ -27,17 +27,25 @@ const commonPropDocs = [
   ],
 ];
 
+const pausedDoc = [
+  "paused",
+  "boolean",
+  "false",
+  "Animasyonu dondurur. Ekran dışındayken zaten kendiliğinden durur.",
+];
+
+// [prop, tip, varsayılan, açıklama, range kontrolü (sadece number için)]
 const componentPropDocs = {
   fireworks: [
-    ["particles", "number", "100", "Aynı anda sahnede durabilecek parçacık tavanı."],
+    ["particles", "number", "100", "Aynı anda sahnede durabilecek parçacık tavanı.", { min: 10, max: 400, step: 10 }],
     ["autoLaunch", "boolean", "true", "Kullanıcı tıklamadan otomatik patlama başlatır."],
     ["interactive", "boolean", "true", "Tıklama / dokunmayla patlama açar."],
-    ["burstSize", "number", "1", "Her patlamada üretilen parçacık sayısı."],
-    ["speed", "number", "1", "Animasyon hız çarpanı (0–3)."],
-    ["paused", "boolean", "false", "Güncellemeleri dondurur."],
+    ["burstSize", "number", "1", "Her patlamada üretilen parçacık sayısı.", { min: 1, max: 20, step: 1 }],
+    ["speed", "number", "1", "Animasyon hız çarpanı (0–3).", { min: 0, max: 3, step: 0.05 }],
+    pausedDoc,
   ],
   campfire: [
-    ["intensity", "number", "1", "Alev boyutu ve hızını ölçekler."],
+    ["intensity", "number", "1", "Alev boyutu ve hızını ölçekler (0.45–1.8).", { min: 0.45, max: 1.8, step: 0.05 }],
     ["sparks", "boolean", "true", "Uçuşan kıvılcımları gösterir."],
     ["logs", "boolean", "true", "Odun yığınını gösterir."],
     ["paused", "boolean", "false", "CSS alev / kıvılcım hareketini durdurur."],
@@ -56,20 +64,39 @@ const componentPropDocs = {
   ],
   "random-words": [
     ["words", "string[]", "dahili liste", "Sırayla gösterilecek kelimeler."],
-    ["duration", "number", "2000", "Her kelimenin animasyon süresi (ms)."],
+    ["duration", "number", "2000", "Her kelimenin animasyon süresi (ms).", { min: 250, max: 6000, step: 50 }],
     ["suffix", "string", '"!"', "Her kelimenin sonuna eklenen metin."],
     ["paused", "boolean", "false", "Kelime animasyonunu duraklatır."],
   ],
   "racing-lines": [
-    ["rows", "number", "14", "Yatay çizgi satırı sayısı."],
-    ["cols", "number", "18", "Dikey çizgi sütunu sayısı."],
+    ["rows", "number", "14", "Tünel derinliğindeki kutu satırı sayısı.", { min: 2, max: 40, step: 1 }],
+    ["cols", "number", "16", "Yan yana kutu sütunu sayısı.", { min: 2, max: 40, step: 1 }],
+    pausedDoc,
   ],
   "rain-screen": [
-    ["density", "number", "1", "Damla, iz ve boncuk miktarı."],
-    ["speed", "number", "1", "Yağmur ve damla hareket hızı."],
+    ["density", "number", "1", "Damla, iz ve boncuk miktarı (0.2–2.4).", { min: 0.2, max: 2.4, step: 0.05 }],
+    ["speed", "number", "1", "Yağmur ve damla hareket hızı (0–3).", { min: 0, max: 3, step: 0.05 }],
     ["interactive", "boolean", "true", "İmleç yakındaki damlaları iter."],
     ["showCity", "boolean", "true", "Şehir silüetini gösterir."],
-    ["paused", "boolean", "false", "Animasyonu dondurur."],
+    pausedDoc,
+  ],
+  ...Object.fromEntries(
+    [
+      "lines-be-lining",
+      "particle-attraction",
+      "rainbow-straightness",
+      "shiny-comets",
+      "simple-motion",
+      "rainbow-transfer",
+      "rainbow-grid",
+      "color-rain-lines",
+      "starfield",
+      "gravity-particles",
+    ].map((slug) => [slug, [pausedDoc]]),
+  ),
+  "chill-lion": [
+    ["showInstructions", "boolean", "true", "Sahnedeki İngilizce kullanım ipucunu gösterir."],
+    pausedDoc,
   ],
 };
 
@@ -107,6 +134,71 @@ function usageSnippet(item, props) {
   return propLines
     ? `<${item.exportName}\n${propLines}\n/>`
     : `<${item.exportName} />`;
+}
+
+// "true" -> true, "100" -> 100, '"!"' -> "!", "şimdi" -> undefined
+function parseDefault(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
+  }
+}
+
+function PropControls({ docs, values, onChange, onReset, dirty }) {
+  const controls = docs.filter(
+    ([, type, , , range]) =>
+      type === "boolean" || type === "string" || (type === "number" && range),
+  );
+  if (controls.length === 0) return null;
+
+  return (
+    <div className="prop-controls" aria-label="Canlı prop kontrolleri">
+      {controls.map(([name, type, fallback, , range]) => {
+        const value = values[name] ?? parseDefault(fallback);
+        return (
+          <label className="prop-control" key={name}>
+            <code>{name}</code>
+            {type === "boolean" ? (
+              <input
+                type="checkbox"
+                checked={Boolean(value)}
+                onChange={(event) => onChange(name, event.target.checked)}
+              />
+            ) : type === "string" ? (
+              <input
+                type="text"
+                value={value ?? ""}
+                onChange={(event) => onChange(name, event.target.value)}
+              />
+            ) : (
+              <span className="prop-range">
+                <input
+                  type="range"
+                  min={range.min}
+                  max={range.max}
+                  step={range.step}
+                  value={value}
+                  onChange={(event) =>
+                    onChange(name, Number(event.target.value))
+                  }
+                />
+                <output>{value}</output>
+              </span>
+            )}
+          </label>
+        );
+      })}
+      <button
+        type="button"
+        className="text-btn"
+        onClick={onReset}
+        disabled={!dirty}
+      >
+        Sıfırla
+      </button>
+    </div>
+  );
 }
 
 function CopyButton({ value }) {
@@ -152,12 +244,6 @@ function PropTable({ item }) {
 
   return (
     <div className="prop-wrap">
-      {extra.length === 0 ? (
-        <p className="prop-note">
-          Bu bileşenin özel kontrolü yok. Yüksekliği, class ve inline stil ile
-          yerleştirilir.
-        </p>
-      ) : null}
       <table className="prop-table">
         <thead>
           <tr>
@@ -190,6 +276,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [activeType, setActiveType] = useState(ALL_TYPES);
   const [selectedSlug, setSelectedSlug] = useState(slugFromLocation);
+  const [overrides, setOverrides] = useState({ slug: null, values: {} });
 
   const typeFilters = useMemo(
     () => [
@@ -219,7 +306,17 @@ export default function App() {
     showcaseItems.find((item) => item.slug === selectedSlug) ??
     showcaseItems[0];
   const SelectedPreview = selectedItem.Component;
-  const selectedPreviewProps = previewPropsBySlug[selectedItem.slug] ?? {};
+  const selectedOverrides =
+    overrides.slug === selectedItem.slug ? overrides.values : {};
+  const selectedPreviewProps = {
+    ...previewPropsBySlug[selectedItem.slug],
+    ...selectedOverrides,
+  };
+  const setPreviewProp = (name, value) =>
+    setOverrides({
+      slug: selectedItem.slug,
+      values: { ...selectedOverrides, [name]: value },
+    });
   const selectedImport = `import { ${selectedItem.exportName} } from "${PACKAGE_NAME}";`;
   const selectedUsage = usageSnippet(selectedItem, selectedPreviewProps);
 
@@ -384,7 +481,14 @@ export default function App() {
               ) : (
                 <p className="item-hint">Önizleme otomatik oynar.</p>
               )}
-              <div className="live-preview">
+              <PropControls
+                docs={componentPropDocs[selectedItem.slug] ?? []}
+                values={selectedPreviewProps}
+                onChange={setPreviewProp}
+                onReset={() => setOverrides({ slug: null, values: {} })}
+                dirty={Object.keys(selectedOverrides).length > 0}
+              />
+              <div className="live-preview" lang="en">
                 <SelectedPreview
                   height="clamp(260px, 36vw, 400px)"
                   {...selectedPreviewProps}
@@ -403,7 +507,7 @@ export default function App() {
                 </div>
                 <div className="code-block">
                   <div className="code-block-head">
-                    <span>Önizleme ile aynı kullanım</span>
+                    <span>Önizlemedeki ayarlarla kullanım</span>
                     <CopyButton value={selectedUsage} />
                   </div>
                   <code>{selectedUsage}</code>
