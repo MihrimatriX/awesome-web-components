@@ -36,6 +36,8 @@ export default defineConfig(({ mode }) => {
   process.env.VITE_SITE_URL = siteUrl;
 
   return {
+    // GitHub Pages serves under /<repo>/, so the base follows the site URL's path.
+    base: new URL(siteUrl).pathname.replace(/\/?$/, "/"),
     plugins: [react(), seoFilesPlugin(siteUrl)],
   };
 });

@@ -3,8 +3,6 @@ import { showcaseItems } from "./showcaseItems.jsx";
 
 const ALL_TYPES = "Tümü";
 const DEFAULT_SELECTED = "rain-screen";
-const PACKAGE_NAME = "mihrimatrix-awesome-components";
-const INSTALL_SNIPPET = `npm i ${PACKAGE_NAME}`;
 
 const commonPropDocs = [
   [
@@ -317,7 +315,7 @@ export default function App() {
       slug: selectedItem.slug,
       values: { ...selectedOverrides, [name]: value },
     });
-  const selectedImport = `import { ${selectedItem.exportName} } from "${PACKAGE_NAME}";`;
+  const selectedImport = `import { ${selectedItem.exportName} } from "./components";`;
   const selectedUsage = usageSnippet(selectedItem, selectedPreviewProps);
 
   useEffect(() => {
@@ -384,17 +382,13 @@ export default function App() {
           <strong>MX</strong>
           <span>
             Awesome Components
-            <small>React görsel bileşen kütüphanesi</small>
+            <small>React görsel bileşenleri</small>
           </span>
         </a>
         <div className="top-tools">
-          <code className="install-chip">
-            {INSTALL_SNIPPET}
-            <CopyButton value={INSTALL_SNIPPET} />
-          </code>
           <a
             className="ghost-link"
-            href="https://github.com/MihrimatriX/Awesome-WebSite"
+            href="https://github.com/MihrimatriX/awesome-web-components"
           >
             Kaynak
           </a>
@@ -405,10 +399,9 @@ export default function App() {
         <section className="hero-panel">
           <h1>Seç, izle, yerleştir.</h1>
           <p>
-            {showcaseItems.length} gömülebilir React görsel bileşen. Soldan
-            birini seç; ne işe yaradığını oku, canlı izle, import kodunu
-            kopyala. CSS import gerekmez — stiller kapsüllenir ve yerleştirildiği
-            kutu genişliğine uyum sağlar.
+            {showcaseItems.length} animasyonlu React bileşeni. Soldan birini
+            seç, ayarlarını değiştir, kodu kopyala. CSS import etmen gerekmez;
+            bileşen konduğu kutunun genişliğine uyar.
           </p>
         </section>
 

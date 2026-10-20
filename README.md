@@ -1,116 +1,60 @@
-# Awesome-WebSite
+# Awesome Components
 
-Bu klasorde eski HTML/CSS/JS denemelerinden cikarilmis bir React component
-kutuphanesi ve ayni componentleri gosteren bir Vite showcase uygulamasi var.
+Canvas, CSS ve Three.js ile yapılmış 18 animasyonlu React bileşeni. Hepsi eski
+HTML/CSS/JS denemelerinden taşındı.
 
-## Calistirma
+Canlı demo: https://mihrimatrix.github.io/awesome-web-components/
 
-```bash
-npm install
-npm run dev
-```
+Demo sayfasında bir bileşen seçip prop'larını değiştirebilir, o ayarlarla
+kullanım kodunu kopyalayabilirsiniz.
 
-Showcase: http://localhost:5173/
+## Kendi projende kullanmak
 
-## Docker
-
-Tek basina, baska servise bagli olmadan:
+Bu bir npm paketi değil. `src/components/` klasörünü projene kopyala; React ve
+Three.js kurulu olmalı:
 
 ```bash
-docker compose up -d --build
+npm install react react-dom three
 ```
-
-Showcase: http://localhost:4173/
-
-## Build
-
-```bash
-npm run build
-```
-
-Demo build `dist/`, kutuphane build'i `dist-lib/` altina uretilir.
-
-## Kutuphane kullanimi
 
 ```jsx
-import { Fireworks, Campfire, RainScreen } from "mihrimatrix-awesome-components";
+import { RainScreen } from "./components";
 
 export function Demo() {
-  return (
-    <RainScreen
-      height={420}
-      density={1.15}
-      speed={0.9}
-      interactive
-      showCity
-    />
-  );
+  return <RainScreen height={420} density={1.15} speed={0.9} showCity />;
 }
 ```
 
-CSS import etmeniz gerekmez; component stilleri JS tarafindan tek seferlik
-olarak sayfaya eklenir. Stiller `.mxac-root` kutusu altinda scope edilir, bu
-yuzden baska projelerdeki global class isimleriyle carpismasi hedeflenmez.
-Isterseniz `componentStyles` ve `ensureComponentStyles()` export'lariyla ayni
-stilleri manuel olarak da yonetebilirsiniz.
+CSS import etmen gerekmez. Stiller ilk kullanımda sayfaya bir kez eklenir ve
+`.mxac-root` altında kalır, böylece sitendeki class'larla çakışmaz.
 
-Tum componentler responsive container mantigiyla calisir; `height`,
-`className` ve `style` props'lariyla baska sayfalara rahatca gomulebilir.
-Sayfa genisligine degil, yerlestirildigi container genisligine uyacak sekilde
-olceklenirler.
+Bileşenler sayfanın değil, içine konduğu kutunun genişliğine göre boyutlanır.
+Hepsi `height`, `className` ve `style` alır. Ekrandan çıkan animasyon durur,
+geri gelince devam eder; aynı sayfaya birkaç efekt koymak boşuna CPU harcamaz.
 
-## Kontrol props'lari
+## Props
 
-Ortak props'lara ek olarak onemli komponentlerde davranis kontrol props'lari
-vardir:
+| Bileşen | Props |
+| --- | --- |
+| `RainScreen` | `density`, `speed`, `interactive`, `showCity`, `paused` |
+| `Fireworks` | `particles`, `autoLaunch`, `interactive`, `burstSize`, `speed`, `paused` |
+| `Campfire` | `intensity`, `sparks`, `logs`, `paused` |
+| `RandomWords` | `words`, `duration`, `suffix`, `paused` |
+| `SlideClock` | `value`, `use24HourClock`, `showSeconds` |
+| `DigitalClock3D` | `value`, `use24HourClock`, `showSeconds`, `interactive`, `showNetwork` |
+| `RacingLines` | `rows`, `cols`, `paused` |
+| `ChillLion` | `showInstructions`, `paused` |
 
-- `RainScreen`: `density`, `speed`, `interactive`, `showCity`, `paused`
-- `Fireworks`: `particles`, `autoLaunch`, `interactive`, `burstSize`, `speed`, `paused`
-- `Campfire`: `intensity`, `sparks`, `logs`, `paused`
-- `RandomWords`: `words`, `duration`, `suffix`, `paused`
-- `SlideClock`: `value`, `use24HourClock`, `showSeconds`
-- `DigitalClock3D`: `value`, `use24HourClock`, `showSeconds`, `interactive`, `showNetwork`
-- `RacingLines`: `rows`, `cols`, `paused`
-- `ChillLion`: `showInstructions`, `paused`
-- Diger tum canvas ve Three.js componentleri: `paused`
+Diğer bileşenler (`Starfield`, `RainbowGrid`, `GravityParticles` ve
+benzerleri) yalnızca `paused` alır.
 
-Canvas ve Three.js animasyonlari ekran disina kaydiginda kendiliginden durur,
-geri gorundugunde devam eder; ayni sayfaya birden fazla efekt gommek bu yuzden
-gorunmeyenler icin CPU/GPU harcamaz.
-
-Showcase uygulamasi bir component lab olarak calisir: komponent secilir,
-canli preview gorulur, prop'lar kontrollerle anlik degistirilir ve kopyalanan
-kullanim kodu o anki ayarlari yansitir.
-
-## Componentler
-
-- `Fireworks` / `HavaiFisek`
-- `Campfire` / `KampAtesi`
-- `SlideClock` / `KapsamliDonerSaat`
-- `DigitalClock3D` / `DigitalSaat3D`
-- `LinesBeLining`
-- `ParticleAttraction`
-- `RacingLines`
-- `RainbowLinesOfStraightness`
-- `RainbowShinyComets`
-- `RainbowSimpleMotionParticles`
-- `RainbowTransfer`
-- `RainbowGrid` / `SidenumChoserRainbowGrid`
-- `RandomWords`
-- `ColorRainLines` / `RenkliAkanCizgiler`
-- `Starfield`
-- `RainScreen` / `YagmurEkrani`
-- `GravityParticles` / `YercekimliParcaciklar`
-- `ChillLion` / `ChillTheLion`
-
-## Paketleme
+## Geliştirme
 
 ```bash
 npm install
-npm run build:lib
-npm pack --dry-run
+npm run dev     # http://localhost:5173/
+npm run build   # dist/
 ```
 
-Paket ciktilari `dist-lib/` altina, TypeScript tipleri `types/` altina
-hazirlanir. React, ReactDOM ve Three.js peer dependency olarak tanimlidir; bu
-sayede kutuphane kullanilan uygulamanin kendi React kopyasini kullanir.
+`main` dalına her push'ta site GitHub Pages'e yüklenir
+(`.github/workflows/pages.yml`).

@@ -69,7 +69,7 @@ export const showcaseItems = [
     exportName: "LinesBeLining",
     type: "Canvas",
     description:
-      "Kenarlardan merkeze akan çizgi ağı. Arka plan veya geçiş yüzeyi olarak gömülür.",
+      "Kenarlardan merkeze akan çizgi ağı.",
     Component: LinesBeLining,
   },
   {
@@ -79,7 +79,7 @@ export const showcaseItems = [
     exportName: "ParticleAttraction",
     type: "Canvas",
     description:
-      "İmlece doğru çekilen renkli parçacık alanı. Vitrin ve hero arka planı için uygundur.",
+      "İmlece doğru çekilen renkli parçacıklar.",
     hint: "İmleci gezdirerek çekim noktasını taşı.",
     Component: ParticleAttraction,
   },
@@ -101,7 +101,7 @@ export const showcaseItems = [
     exportName: "RainbowLinesOfStraightness",
     type: "Canvas",
     description:
-      "Gökkuşağı paletiyle ilerleyen düz çizgi hareketi. Sakin, dekoratif bir canvas sahnesi.",
+      "Gökkuşağı renklerinde ilerleyen düz çizgiler.",
     Component: RainbowLinesOfStraightness,
   },
   {
@@ -111,7 +111,7 @@ export const showcaseItems = [
     exportName: "RainbowShinyComets",
     type: "Canvas",
     description:
-      "Parlak kuyruklu yıldız izleri. Hero veya yükleme ekranı arka planı olarak kullanılabilir.",
+      "Parlak kuyruklu yıldız izleri.",
     Component: RainbowShinyComets,
   },
   {
@@ -121,7 +121,7 @@ export const showcaseItems = [
     exportName: "RainbowSimpleMotionParticles",
     type: "Canvas",
     description:
-      "Hafif gökkuşağı parçacık hareketi. Düşük maliyetli, sürekli akan bir arka plan.",
+      "Sürekli akan gökkuşağı renkli parçacıklar. İşlemciyi az yorar.",
     Component: RainbowSimpleMotionParticles,
   },
   {
@@ -131,7 +131,7 @@ export const showcaseItems = [
     exportName: "RainbowTransfer",
     type: "Canvas",
     description:
-      "Renklerin birbirine aktığı gökkuşağı akışı. Tam genişlikte dekoratif bir bant olarak durur.",
+      "Renklerin birbirine aktığı, tam genişlikte bir gökkuşağı bandı.",
     Component: RainbowTransfer,
   },
   {
@@ -141,7 +141,7 @@ export const showcaseItems = [
     exportName: "RainbowGrid",
     type: "Canvas",
     description:
-      "Hücreleri yanıp sönen gökkuşağı ızgarası. Ritimli, geometrik bir canvas deseni.",
+      "Hücreleri yanıp sönen gökkuşağı ızgarası.",
     Component: RainbowGrid,
   },
   {
@@ -161,7 +161,7 @@ export const showcaseItems = [
     exportName: "ColorRainLines",
     type: "Canvas",
     description:
-      "Yukarıdan aşağıya akan renkli çizgiler. Yağmur benzeri, sürekli bir hareket katmanı.",
+      "Yağmur gibi yukarıdan aşağıya akan renkli çizgiler.",
     Component: ColorRainLines,
   },
   {
@@ -171,7 +171,7 @@ export const showcaseItems = [
     exportName: "Starfield",
     type: "Canvas",
     description:
-      "Derinlik hissi veren yıldız alanı. Gece temalı arka planlar için hazır bir sahne.",
+      "İçine doğru uçuluyormuş gibi görünen yıldız alanı.",
     Component: Starfield,
   },
   {
