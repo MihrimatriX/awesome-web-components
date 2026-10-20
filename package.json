@@ -1,0 +1,27 @@
+{
+  "name": "awesome-web-components",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Animated React components built with canvas, CSS and Three.js.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.171.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.0",
+    "vite": "^8.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MihrimatriX/awesome-web-components.git"
+  },
+  "license": "ISC",
+  "homepage": "https://mihrimatrix.github.io/awesome-web-components/"
+}

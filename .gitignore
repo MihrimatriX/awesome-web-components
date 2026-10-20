@@ -1,0 +1,6 @@
+node_modules/
+dist/
+artifacts/
+.env
+vite-dev.*.log
+npm-debug.log*
